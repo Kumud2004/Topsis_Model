@@ -1,0 +1,74 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+data = pd.read_csv("../data/decision_matrix.csv")
+
+models = data.iloc[:, 0]
+matrix = data.iloc[:, 1:].values
+
+
+weights = np.array([0.30, 0.15, 0.15, 0.15, 0.25])
+
+impact = ['+', '-', '-', '-', '+']
+
+
+norm = matrix / np.sqrt((matrix ** 2).sum(axis=0))
+
+
+weighted = norm * weights
+
+
+ideal_best = []
+ideal_worst = []
+
+for i in range(len(impact)):
+
+    if impact[i] == '+':
+        ideal_best.append(max(weighted[:, i]))
+        ideal_worst.append(min(weighted[:, i]))
+    else:
+        ideal_best.append(min(weighted[:, i]))
+        ideal_worst.append(max(weighted[:, i]))
+
+
+ideal_best = np.array(ideal_best)
+ideal_worst = np.array(ideal_worst)
+
+
+D_plus = np.sqrt(((weighted - ideal_best) ** 2).sum(axis=1))
+D_minus = np.sqrt(((weighted - ideal_worst) ** 2).sum(axis=1))
+
+
+score = D_minus / (D_plus + D_minus)
+
+
+rank = score.argsort()[::-1] + 1
+
+
+result = pd.DataFrame({
+    "Model": models,
+    "TOPSIS Score": score,
+    "Rank": rank
+})
+
+result = result.sort_values("Rank")
+
+
+result.to_csv("../results/topsis_result.csv", index=False)
+
+
+print(result)
+
+
+plt.figure()
+plt.bar(models, score)
+plt.title("TOPSIS Score of Conversational Models")
+plt.xlabel("Models")
+plt.ylabel("Score")
+plt.xticks(rotation=45)
+plt.tight_layout()
+
+plt.savefig("../results/topsis_graph.png")
+plt.show()
