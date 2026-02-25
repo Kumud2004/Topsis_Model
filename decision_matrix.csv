@@ -1,0 +1,6 @@
+Model,BLEU,Time,Size,Memory,Satisfaction
+DialoGPT-S,0.42,85,350,700,3.9
+DialoGPT-M,0.48,120,720,1200,4.2
+DialoGPT-L,0.52,190,1500,2400,4.5
+BlenderBot,0.55,210,1800,2600,4.6
+GPT2-Chat,0.45,140,500,900,4.0
